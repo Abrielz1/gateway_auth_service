@@ -88,21 +88,21 @@ CREATE TABLE IF NOT EXISTS security.phone_data(
  FOREIGN KEY (user_id)   REFERENCES security.users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_users_not_deleted ON security.users (is_deleted,id) WHERE is_deleted = false;
-CREATE INDEX idx_users_last_login ON security.users (last_login_timestamp);
-CREATE INDEX idx_users_dob ON security.users (date_of_birth);
-CREATE INDEX idx_users_registration_brin ON security.users USING brin (registration_timestamp); -- специально использую brin для ранжирования
-CREATE INDEX idx_users_active_registration ON security.users (is_deleted, registration_timestamp) WHERE is_deleted = false;
+CREATE INDEX IF NOT EXISTS idx_users_not_deleted ON security.users (is_deleted,id) WHERE is_deleted = false;
+CREATE INDEX IF NOT EXISTS idx_users_last_login ON security.users (last_login_timestamp);
+CREATE INDEX IF NOT EXISTS idx_users_dob ON security.users (date_of_birth);
+CREATE INDEX IF NOT EXISTS idx_users_registration_brin ON security.users USING brin (registration_timestamp); -- специально использую brin для ранжирования
+CREATE INDEX IF NOT EXISTS idx_users_active_registration ON security.users (is_deleted, registration_timestamp) WHERE is_deleted = false;
 
-CREATE INDEX idx_employees_mentor ON security.employees(mentor_id);
+CREATE INDEX IF NOT EXISTS idx_employees_mentor ON security.employees(mentor_id);
 
-CREATE INDEX idx_customers_invited_by ON security.customers(invited_by_id);
+CREATE INDEX IF NOT EXISTS idx_customers_invited_by ON security.customers(invited_by_id);
 
-CREATE INDEX idx_phone_data_user_id ON security.phone_data(user_id);
+CREATE INDEX IF NOT EXISTS idx_phone_data_user_id ON security.phone_data(user_id);
 
-CREATE INDEX idx_email_data_user_id ON security.email_data(user_id);
+CREATE INDEX IF NOT EXISTS idx_email_data_user_id ON security.email_data(user_id);
 
-CREATE INDEX idx_password_data_user_id ON security.password_data(user_id);
+CREATE INDEX IF NOT EXISTS idx_password_data_user_id ON security.password_data(user_id);
 
-CREATE INDEX idx_login_data_user_id ON security.login_data(user_id);
+CREATE INDEX IF NOT EXISTS idx_login_data_user_id ON security.login_data(user_id);
 

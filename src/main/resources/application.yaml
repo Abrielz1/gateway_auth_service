@@ -6,6 +6,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+    mongodb:
+      uri: mongodb://${MONGO_USER:admin}:${MONGO_PASSWORD:mongo_secret}@localhost:27017/${MONGO_DB:auth_reports}?authSource=admin
   jpa:
     hibernate:
       ddl-auto: none
@@ -14,9 +16,9 @@ spring:
       hibernate:
         format_sql: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/hr_overtime
-    username: postgres
-    password: super_secret_password
+    url: jdbc:postgresql://localhost:5432/${SECURITY_DB_NAME:auth_gateway}
+    username: ${SECURITY_DB_USER:postgres}
+    password: ${SECURITY_DB_PASSWORD:root}
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
