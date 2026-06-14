@@ -34,9 +34,18 @@
 		<postgresql.version>42.7.10</postgresql.version>
 		<gateway-server-webmvc.version>4.3.4</gateway-server-webmvc.version>
 		<prometheus.version>1.15.11</prometheus.version>
+		<redisson.version>3.29.0</redisson.version>
+		<rate-limiter.version>8.10.0</rate-limiter.version>
+
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j-core</artifactId>
+			<version>${rate-limiter.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -184,6 +193,12 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson-spring-boot-starter</artifactId>
+			<version>${redisson.version}</version>
 		</dependency>
 
 	</dependencies>
