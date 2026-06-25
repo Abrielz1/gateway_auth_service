@@ -30,9 +30,10 @@ public class ClientLoginFacadeImpl implements ClientLoginFacade {
     }
 
     @Override
-    public AuthTokenDto refresh(String refreshToken) {
+    //@PreAuthorize("")
+    public AuthTokenDto refresh(RefreshTokenRequestDto refreshToken) {
 
-        return this.clientLoginWorker.refresh(new RefreshTokenRequestDto(refreshToken));
+        return this.clientLoginWorker.refresh(refreshToken);
     }
 
     @Override

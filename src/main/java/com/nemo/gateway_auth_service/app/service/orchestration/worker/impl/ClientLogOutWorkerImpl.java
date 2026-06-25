@@ -1,5 +1,6 @@
 package com.nemo.gateway_auth_service.app.service.orchestration.worker.impl;
 
+import com.nemo.gateway_auth_service.app.security.jwt.JwtUtils;
 import com.nemo.gateway_auth_service.app.service.orchestration.worker.ClientLogOutWorker;
 import com.nemo.gateway_auth_service.app.service.orchestration.worker.ClientSessionWorker;
 import com.nemo.gateway_auth_service.web.model.request.ClientLogoutRequestDto;
@@ -16,11 +17,11 @@ public class ClientLogOutWorkerImpl implements ClientLogOutWorker {
 
     private final ClientSessionWorker clientSessionWorker;
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
     @Override
     public void logout(@Valid ClientLogoutRequestDto requestDto) {
-    var claims = this.jwtTokenProvider.getClaimsFromToken(requestDto.refreshToken());
+    var claims = this.jwtUtils.getAllClaimsFromToken(requestDto.refreshToken());
         var userId = UUID.fromString(claims.getSubject());
         this.clientSessionWorker.deleteSession(userId);
     }

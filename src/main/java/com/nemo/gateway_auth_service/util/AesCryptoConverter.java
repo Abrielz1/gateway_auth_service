@@ -1,5 +1,6 @@
 package com.nemo.gateway_auth_service.util;
 
+import com.nemo.gateway_auth_service.util.exception.exceptions.EncryptionDataFailureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -7,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.example.account.shared.exception.exceptions.EncryptionDataFailureException;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
