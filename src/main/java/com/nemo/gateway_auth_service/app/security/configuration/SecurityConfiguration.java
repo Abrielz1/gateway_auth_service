@@ -82,25 +82,6 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**"
                         ).permitAll()
-
-                        .requestMatchers("/api/v1/security/officer/**").hasAnyAuthority(
-
-                                RoleType.ROLE_ADMIN.name() // Админ может все
-                        )
-                        .requestMatchers("/api/v1/security/supervisor/**").hasAnyAuthority(
-
-                                RoleType.ROLE_ADMIN.name()
-                        )
-
-                        .requestMatchers("/api/v1/management/manager/**").hasAnyAuthority(
-
-                                RoleType.ROLE_ADMIN.name()
-                        )
-                        .requestMatchers("/api/v1/management/top/**").hasAnyAuthority(
-
-                                RoleType.ROLE_ADMIN.name()
-                        )
-
                         .requestMatchers("/api/v1/admin/**").hasAuthority(RoleType.ROLE_ADMIN.name())
 
                         .anyRequest().authenticated()

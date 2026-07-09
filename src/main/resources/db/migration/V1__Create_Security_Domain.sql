@@ -33,18 +33,6 @@ CREATE TABLE IF NOT EXISTS security.user_roles (
     FOREIGN KEY (user_id) REFERENCES security.users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS security.employees (
- user_id                 BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
- hire_date               DATE NOT NULL,
- employee_internal_id    VARCHAR(100) UNIQUE NOT NULL,
- termination_date        DATE,
- position                VARCHAR(255),
- department              VARCHAR(255),
- security_cleared        BOOLEAN NOT NULL DEFAULT false,
- mentor_id               BIGINT,
- FOREIGN KEY (mentor_id) REFERENCES security.employees(user_id)
-);
-
 CREATE TABLE IF NOT EXISTS security.customers (
 user_id                 BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
 registration_source     VARCHAR(255),
