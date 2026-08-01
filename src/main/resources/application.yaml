@@ -5,7 +5,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      port: ${FINTECH_REDIS_PORT:6379}
     mongodb:
       uri: mongodb://${MONGO_USER:admin}:${MONGO_PASSWORD:mongo_secret}@${MONGO_HOST:localhost}:27017/${MONGO_DB:auth_reports}?authSource=admin
   jpa:
