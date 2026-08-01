@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven-3.9' // Имя должно СТРОГО совпадать с именем из шага 1
+    }
+
     environment {
 
         DOCKER_REPO = "Abriel"
