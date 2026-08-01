@@ -36,9 +36,9 @@ pipeline {
                 )]) {
                     echo 'Сборка и пуш Docker-образа через переменные среды Jib...'
                     sh """
-            mvn clean jib:build \
-              -DskipTests \
-              -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
+            mvn clean package jib:build \\
+              -DskipTests \\
+              -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \\
               -Djib.to.tags=latest
             """
                 }
