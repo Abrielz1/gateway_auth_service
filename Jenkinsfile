@@ -27,6 +27,13 @@ pipeline {
             }
         }
 
+        stage('Build Spring Boot Classes') {
+            steps {
+                echo 'Компилируем классы приложения без создания fat-jar... потому что Jib заёбал сука'
+                sh 'mvn clean compile -DskipTests'
+            }
+        }
+
         stage('Build & Push Docker Image (via Jib)') {
             steps {
                 withCredentials([usernamePassword(
@@ -34,14 +41,13 @@ pipeline {
                         usernameVariable: 'HUB_USER',
                         passwordVariable: 'HUB_PASS'
                 )]) {
-                    echo 'щас пробуем собрать с $, но упадём ёбанный docker'
-
-                    sh 'mvn clean package jib:build ' +
+                    echo 'Запускаем Jib ... но он тупое говно тупого говна'
+                    sh 'mvn jib:build ' +
                             '-DskipTests ' +
                             "-Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} " +
                             '-Djib.to.tags=latest ' +
-                            '-Djib.to.auth.username="$HUB_USER" ' +
-                            '-Djib.to.auth.password="$HUB_PASS" ' +
+                            '-Djib.to.auth.username=$HUB_USER ' +
+                            '-Djib.to.auth.password=$HUB_PASS ' +
                             '-Djib.from.auth.username="" ' +
                             '-Djib.from.auth.password=""'
                 }
