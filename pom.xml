@@ -444,26 +444,29 @@
 				<artifactId>jib-maven-plugin</artifactId>
 				<version>3.4.0</version>
 				<configuration>
-				<from>
-					<image>amazoncorretto:21-alpine</image>
-					<auth>
-						<username></username>
-						<password></password>
-					</auth>
-				</from>
-				<container>
-					<mainClass>com.nemo.gateway_auth_service.GatewayAuthServiceApplication</mainClass>
-					<user>65534:65534</user>
-					<ports>
-						<port>8080</port>
-					</ports>
-					<jvmFlags>
-						<jvmFlag>-Dfile.encoding=UTF-8</jvmFlag>
-					</jvmFlags>
-				</container>
-
+					<from>
+						<image>amazoncorretto:21-alpine</image>
+						<auth>
+							<username></username>
+							<password></password>
+						</auth>
+					</from>
+					<container>
+						<mainClass>com.nemo.gateway_auth_service.GatewayAuthServiceApplication</mainClass>
+						<user>65534:65534</user>
+						<ports>
+							<port>8080</port>
+						</ports>
+						<jvmFlags>
+							<jvmFlag>-Dfile.encoding=UTF-8</jvmFlag>
+						</jvmFlags>
+					</container>
 					<to>
 						<image>abriel/gateway-auth-app</image>
+						<auth>
+							<username>${env.HUB_USER}</username>
+							<password>${env.HUB_PASS}</password>
+						</auth>
 					</to>
 				</configuration>
 			</plugin>
