@@ -458,7 +458,7 @@
 				</container>
 
 					<to>
-						<image>Abriel/gateway-auth-app</image>
+						<image>abriel/gateway-auth-app</image>
 					</to>
 				</configuration>
 			</plugin>
