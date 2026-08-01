@@ -30,17 +30,17 @@ public class AesCryptoConverter implements AttributeConverter<String, String> {
     private static final int IV_LENGTH_BYTES = 12;
     private static final int TAG_LENGTH_BITS = 128;
 
-    @PostConstruct
-    public void init() {
-
-        if (secretKeyString == null || secretKeyString.isBlank()) {
-            throw new IllegalStateException("Encryption secret key is not configured!");
+    private void ensureInitialized() {
+        if (this.secretKey != null) {
+            return;
         }
 
-        byte[] decodedKey;
-        try {
+        if (secretKeyString == null || secretKeyString.isBlank()) {
+            throw new IllegalStateException("Encryption secret key is not configured or Spring context not ready!");
+        }
 
-            decodedKey = Base64.getDecoder().decode(secretKeyString);
+        try {
+            byte[] decodedKey = Base64.getDecoder().decode(secretKeyString);
 
             if (decodedKey.length != 16 && decodedKey.length != 24 && decodedKey.length != 32) {
                 throw new IllegalStateException(
@@ -49,7 +49,7 @@ public class AesCryptoConverter implements AttributeConverter<String, String> {
             }
 
             this.secretKey = new SecretKeySpec(decodedKey, "AES");
-            log.info("AES Crypto Converter initialized successfully.");
+            log.info("AES Crypto Converter lazily initialized successfully.");
         } catch (IllegalArgumentException e) {
             throw new IllegalStateException("Invalid Base64 for encryption key", e);
         }
@@ -61,6 +61,8 @@ public class AesCryptoConverter implements AttributeConverter<String, String> {
         if (attribute == null) {
             return null;
         }
+
+        this.ensureInitialized();
 
         try {
             byte[] iv = new byte[IV_LENGTH_BYTES];
