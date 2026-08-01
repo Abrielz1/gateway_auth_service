@@ -29,19 +29,36 @@ pipeline {
 
         stage('Build & Push Docker Image (via Jib)') {
             steps {
-                withCredentials([usernamePassword(
-                        credentialsId: 'docker-hub-creds',
-                        usernameVariable: 'HUB_USER',
-                        passwordVariable: 'HUB_PASS'
-                )]) {
-                    echo 'Компилируем проект и пушим Docker-образ через экранированные параметры...'
+                withConfigFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]) {
+                    withCredentials([usernamePassword(
+                            credentialsId: 'docker-hub-creds',
+                            usernameVariable: 'HUB_USER',
+                            passwordVariable: 'HUB_PASS'
+                    )]) {
+                        echo 'Туту обычно падает, на генерации и запихивания в докер хаб'
+                        sh """
+                cat << EOF > settings.xml
+                <settings>
+                    <servers>
+                        <server>
+                            <id>registry-1.docker.io</id>
+                            <username>${HUB_USER}</username>
+                            <password>${HUB_PASS}</password>
+                        </server>
+                    </servers>
+                </settings>
+                EOF
+                """
 
-                    sh 'mvn clean package jib:build ' +
-                            '-DskipTests ' +
-                            "-Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} " +
-                            '-Djib.to.tags=latest ' +
-                            '-Djib.to.auth.username=' + HUB_USER + ' ' +
-                            '-Djib.to.auth.password=' + HUB_PASS
+                        echo 'Компилируем и пушим образ (Jib подхватит креды из settings.xml)...'
+                        sh """
+                mvn clean package jib:build \
+                  -s settings.xml \
+                  -DskipTests \
+                  -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
+                  -Djib.to.tags=latest
+                """
+                    }
                 }
             }
         }
