@@ -29,36 +29,37 @@ pipeline {
 
         stage('Build & Push Docker Image (via Jib)') {
             steps {
-                withConfigFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]) {
-                    withCredentials([usernamePassword(
-                            credentialsId: 'docker-hub-creds',
-                            usernameVariable: 'HUB_USER',
-                            passwordVariable: 'HUB_PASS'
-                    )]) {
-                        echo 'Туту обычно падает, на генерации и запихивания в докер хаб'
-                        sh """
-                cat << EOF > settings.xml
-                <settings>
-                    <servers>
-                        <server>
-                            <id>registry-1.docker.io</id>
-                            <username>${HUB_USER}</username>
-                            <password>${HUB_PASS}</password>
-                        </server>
-                    </servers>
-                </settings>
-                EOF
-                """
+                withCredentials([usernamePassword(
+                        credentialsId: 'docker-hub-creds',
+                        usernameVariable: 'HUB_USER',
+                        passwordVariable: 'HUB_PASS'
+                )]) {
+                    echo 'Создаем временный settings.xml для авторизации Maven... ща упадёт'
 
-                        echo 'Компилируем и пушим образ (Jib подхватит креды из settings.xml)...'
-                        sh """
-                mvn clean package jib:build \
-                  -s settings.xml \
-                  -DskipTests \
-                  -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
-                  -Djib.to.tags=latest
-                """
-                    }
+                    sh '''
+            cat << 'EOF' > settings.xml
+<settings xmlns="http://apache.org"
+          xmlns:xsi="http://w3.org"
+          xsi:schemaLocation="http://apache.org https://apache.org">
+    <servers>
+        <server>
+            <id>registry-1.docker.io</id>
+            <username>${HUB_USER}</username>
+            <password>${HUB_PASS}</password>
+        </server>
+    </servers>
+</settings>
+EOF
+            '''
+
+                    echo 'Компилируем проект и пушим в Docker Hub через settings.xml... или шас'
+                    sh """
+            mvn clean package jib:build \
+              -s settings.xml \
+              -DskipTests \
+              -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
+              -Djib.to.tags=latest
+            """
                 }
             }
         }
@@ -67,7 +68,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG')]) {
 
-
+                    echo 'или шас'
                     sh "sed -i 's|image: .*|image: ${DOCKER_REPO}:${DOCKER_TAG}|g' k8s/app.yaml"
 
                     sh "kubectl apply -f k8s/app.yaml --kubeconfig=$KUBECONFIG"
