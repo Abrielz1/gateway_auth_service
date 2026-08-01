@@ -15,13 +15,23 @@ pipeline {
 
         stage('Build Docker Image via SSH') {
             steps {
-                sh "ssh -o StrictHostKeyChecking=no root@192.168.1.60 'rm -rf /root/gateway-build && mkdir -p /root/gateway-build'"
+                withCredentials([usernamePassword(
+                        credentialsId: 'devuan-root-creds',
+                        usernameVariable: 'SSH_USER',
+                        passwordVariable: 'SSH_PASS'
+                )]) {
+                    echo 'убиваем старуй сборк на хуй...'
+                    sh "sshpass -p '${SSH_PASS}' ssh -o StrictHostKeyChecking=no ${SSH_USER}@192.168.1.60 'rm -rf /root/gateway-build && mkdir -p /root/gateway-build'"
 
-                sh "scp -o StrictHostKeyChecking=no -r src pom.xml Dockerfile root@192.168.1.60:/root/gateway-build/"
+                    echo 'из докера швыряем образ в k3s и...'
+                    sh "sshpass -p '${SSH_PASS}' scp -o StrictHostKeyChecking=no -r src pom.xml Dockerfile ${SSH_USER}@192.168.1.60:/root/gateway-build/"
 
-                sh "ssh -o StrictHostKeyChecking=no root@192.168.1.60 'cd /root/gateway-build && docker build -t ${IMAGE_NAME} .'"
+                    echo 'Запускаю сборку Docker внутри движка k3s... и...'
+                    sh "sshpass -p '${SSH_PASS}' ssh -o StrictHostKeyChecking=no ${SSH_USER}@192.168.1.60 'cd /root/gateway-build && docker build -t ${IMAGE_NAME} .'"
+                }
             }
         }
+
 
         stage('Deploy to k3s Cluster') {
             steps {
