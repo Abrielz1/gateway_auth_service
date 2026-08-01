@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        // Локальное имя образа в кэше докера вашей виртуалки
         IMAGE_NAME = "abriel/gateway-auth-app:latest"
+
+        KUBECONFIG = "/etc/rancher/k3s/k3s.yaml"
     }
 
     stages {
@@ -15,8 +16,7 @@ pipeline {
 
         stage('Build Docker Image via Local Socket') {
             steps {
-                echo 'Запускаем каноничную Multi-stage сборку образа через проброшенный Docker хоста...'
-                // Команда выполняется локально, используя бинарник и сокет с твоей Devuan-виртуалки!
+
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
@@ -34,10 +34,11 @@ pipeline {
 
     post {
         success {
-            echo '✅ Билд и локальный Деплой прошли успешно! Архитектура работает!'
+            echo '✅ БИЛД И ДЕПЛОЙ ПРОШЛИ УСПЕШНО! ВСЁ РАБОТАЕТ!'
         }
         failure {
             echo '❌ ОШИБКА! Проверь логи Jenkins.'
         }
     }
 }
+
