@@ -1,13 +1,11 @@
 package com.nemo.gateway_auth_service;
 
-import com.nemo.gateway_auth_service.app.domain.dto.JwtProperties;
-import com.nemo.gateway_auth_service.util.confguration.EncryptionProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties({JwtProperties.class, EncryptionProperties.class})
+@ConfigurationPropertiesScan
 public class GatewayAuthServiceApplication {
 
 	public static void main(String[] args) {
