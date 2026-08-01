@@ -446,8 +446,13 @@
 				<configuration>
 				<from>
 					<image>amazoncorretto:21-alpine</image>
+					<auth>
+						<username></username>
+						<password></password>
+					</auth>
 				</from>
 				<container>
+					<mainClass>com.nemo.gateway_auth_service.GatewayAuthServiceApplication</mainClass>
 					<user>65534:65534</user>
 					<ports>
 						<port>8080</port>
