@@ -23,14 +23,11 @@ pipeline {
 
         stage('Deploy to k3s Cluster') {
             steps {
-                withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG')]) {
-                    echo 'Применяем ваш k8s.yaml манифест...'
-                    sh "kubectl apply -f k8s/app.yaml --kubeconfig=$KUBECONFIG"
 
-                    echo 'Мгновенно перезапускаем поды из локального кэша...'
-                    sh "kubectl rollout restart deployment/gateway-auth-app --kubeconfig=$KUBECONFIG"
-                    sh "kubectl rollout status deployment/gateway-auth-app --kubeconfig=$KUBECONFIG"
-                }
+                sh 'kubectl apply -f k8s/app.yaml'
+
+                sh 'kubectl rollout restart deployment/gateway-auth-app'
+                sh 'kubectl rollout status deployment/gateway-auth-app'
             }
         }
     }
