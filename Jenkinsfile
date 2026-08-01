@@ -27,17 +27,18 @@ pipeline {
             }
         }
 
-        stage('Build & Push Docker Image') {
+        stage('Build & Push Docker Image (via Jib)') {
             steps {
+                echo 'Собираем и пушим образ через Google Jib (без Docker-демона!)...'
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
 
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-
-                    sh "docker build -t ${DOCKER_REPO}:${DOCKER_TAG} ."
-                    sh "docker tag ${DOCKER_REPO}:${DOCKER_TAG} ${DOCKER_REPO}:latest"
-
-                    sh "docker push ${DOCKER_REPO}:${DOCKER_TAG}"
-                    sh "docker push ${DOCKER_REPO}:latest"
+                    sh """
+                    mvn jib:build \
+                      -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
+                      -Djib.to.tags=latest \
+                      -Djib.to.auth.username=\$DOCKER_USER \
+                      -Djib.to.auth.password=\$DOCKER_PASS
+                    """
                 }
             }
         }
