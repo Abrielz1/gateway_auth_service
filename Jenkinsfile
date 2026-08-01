@@ -34,35 +34,21 @@ pipeline {
                         usernameVariable: 'HUB_USER',
                         passwordVariable: 'HUB_PASS'
                 )]) {
-                    echo 'Создаем временный settings.xml для авторизации Maven... ща упадёт'
-
-                    sh '''
-            cat << 'EOF' > settings.xml
-<settings xmlns="http://apache.org"
-          xmlns:xsi="http://w3.org"
-          xsi:schemaLocation="http://apache.org https://apache.org">
-    <servers>
-        <server>
-            <id>registry-1.docker.io</id>
-            <username>${HUB_USER}</username>
-            <password>${HUB_PASS}</password>
-        </server>
-    </servers>
-</settings>
-EOF
-            '''
-
-                    echo 'Компилируем проект и пушим в Docker Hub через settings.xml... или шас'
+                    echo 'Запускаем чистую прод-сборку без XML файлов... и падает'
                     sh """
             mvn clean package jib:build \
-              -s settings.xml \
               -DskipTests \
               -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
-              -Djib.to.tags=latest
+              -Djib.to.tags=latest \
+              -Djib.to.auth.username="${HUB_USER}" \
+              -Djib.to.auth.password="${HUB_PASS}" \
+              -Djib.from.auth.username="" \
+              -Djib.from.auth.password=""
             """
                 }
             }
         }
+
 
         stage('Deploy to k3s Cluster') {
             steps {
