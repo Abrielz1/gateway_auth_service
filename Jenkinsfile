@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout SCM') {
             steps {
-                cleanWs()
+                sh 'rm -rf ..?* .[!.]* *'
                 checkout scm
             }
         }
