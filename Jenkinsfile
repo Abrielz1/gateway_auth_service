@@ -34,7 +34,7 @@ pipeline {
                         usernameVariable: 'HUB_USER',
                         passwordVariable: 'HUB_PASS'
                 )]) {
-                    echo 'Запускаем чистую прод-сборку без XML файлов... и падает'
+                    echo 'Запускаем чистую прод-сборку, ну более-менее читстую... и падаем'
                     sh """
             mvn clean package jib:build \
               -DskipTests \
