@@ -34,21 +34,19 @@ pipeline {
                         usernameVariable: 'HUB_USER',
                         passwordVariable: 'HUB_PASS'
                 )]) {
-                    echo 'Запускаем чистую прод-сборку, ну более-менее читстую... и падаем'
-                    sh """
-            mvn clean package jib:build \
-              -DskipTests \
-              -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
-              -Djib.to.tags=latest \
-              -Djib.to.auth.username="${HUB_USER}" \
-              -Djib.to.auth.password="${HUB_PASS}" \
-              -Djib.from.auth.username="" \
-              -Djib.from.auth.password=""
-            """
+                    echo 'щас пробуем собрать с $, но упадём ёбанный docker'
+
+                    sh 'mvn clean package jib:build ' +
+                            '-DskipTests ' +
+                            "-Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} " +
+                            '-Djib.to.tags=latest ' +
+                            '-Djib.to.auth.username="$HUB_USER" ' +
+                            '-Djib.to.auth.password="$HUB_PASS" ' +
+                            '-Djib.from.auth.username="" ' +
+                            '-Djib.from.auth.password=""'
                 }
             }
         }
-
 
         stage('Deploy to k3s Cluster') {
             steps {
