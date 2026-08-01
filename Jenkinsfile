@@ -7,7 +7,7 @@ pipeline {
 
     environment {
 
-        DOCKER_REPO = "Abriel"
+        DOCKER_REPO = "abriel/gateway-auth-app"
         DOCKER_TAG = "v${env.BUILD_NUMBER}"
     }
 
