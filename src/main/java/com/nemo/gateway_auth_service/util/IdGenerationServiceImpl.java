@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class IdGenerationServiceImpl  { //implements IdGenerationService
 
 
-    private final RedissonClient redissonClient;
+    // private final RedissonClient redissonClient;
 
     private final SecureRandom secureRandom = new SecureRandom();
 
@@ -70,39 +70,39 @@ public class IdGenerationServiceImpl  { //implements IdGenerationService
 //    }
 
   //  @Override
-    public String generateUniqueTokenId() {
-        final RLock lock = redissonClient.getLock("lock:gen:refresh-token");
-        try {
-            if (!lock.tryLock(5, TimeUnit.SECONDS)) {
-                throw new IllegalStateException("Failed to acquire lock for refresh token generation");
-            }
+  //   public String generateUniqueTokenId() {
+    //      final RLock lock = redissonClient.getLock("lock:gen:refresh-token");
+    //       try {
+    //         if (!lock.tryLock(5, TimeUnit.SECONDS)) {
+    //             throw new IllegalStateException("Failed to acquire lock for refresh token generation");
+    //         }
 
-            byte[] sessionBytes = new byte[16];
-            secureRandom.nextBytes(sessionBytes);
+    //       byte[] sessionBytes = new byte[16];
+    //       secureRandom.nextBytes(sessionBytes);
 
-            String token = UUID.nameUUIDFromBytes(sessionBytes).toString();
+            //         String token = UUID.nameUUIDFromBytes(sessionBytes).toString();
 
-            int currentAttempt = 0;
-            while (currentAttempt < MAX_ATTEMPTS) {
+            //          int currentAttempt = 0;
+            //          while (currentAttempt < MAX_ATTEMPTS) {
                 // Простая, явная проверка в ОБЕИХ таблицах
 //                if (Boolean.TRUE.equals(!authSessionPostgresRepo.existsByRefreshToken(token))
 //                        && Boolean.TRUE.equals(!revokedTokenArchiveRepository.existsById(token))) {
 //                    return token;
 //                }
 
-                token = UUID.nameUUIDFromBytes(sessionBytes).toString();
+                //              token = UUID.nameUUIDFromBytes(sessionBytes).toString();
 
-                ++currentAttempt;
-            }
-            throw new IllegalStateException("Failed to generate unique refresh token");
+                //               ++currentAttempt;
+                //            }
+            //           throw new IllegalStateException("Failed to generate unique refresh token");
 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("RefreshToken generation interrupted", e);
-        } finally {
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
-        }
-    }
+            //    } catch (InterruptedException e) {
+            //           Thread.currentThread().interrupt();
+            // //            throw new RuntimeException("RefreshToken generation interrupted", e);
+            //        } finally {
+            //           if (lock.isHeldByCurrentThread()) {
+                //              lock.unlock();
+                //          }
+            //      }
+        // }
 }
