@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-auth-app
+  labels:
+    app: gateway-auth-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-auth-app
+  template:
+    metadata:
+      labels:
+        app: gateway-auth-app
+    spec:
+      containers:
+        - name: spring-app
+          image: abriel/gateway-auth-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+
+          # Подсовываем Спрингу адреса баз внутри кластера k3s
+          env:
+            - name: DB_HOST
+              value: "auth-db"
+            - name: REDIS_HOST
+              value: "fintech-redis"
+            - name: MONGO_HOST
+              value: "security-mongo"
+
+          envFrom:
+            - secretRef:
+                name: auth-service-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-auth-service
+spec:
+  type: NodePort
+  selector:
+    app: gateway-auth-app
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 32080
