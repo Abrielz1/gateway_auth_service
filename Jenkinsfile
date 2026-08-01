@@ -29,15 +29,18 @@ pipeline {
 
         stage('Build & Push Docker Image (via Jib)') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    echo 'Сборка и пуш Docker-образа...'
+                withCredentials([usernamePassword(
+                        credentialsId: 'docker-hub-creds',
+                        usernameVariable: 'JIB_TO_AUTH_USERNAME',
+                        passwordVariable: 'JIB_TO_AUTH_PASSWORD'
+                )]) {
+                    echo 'Сборка и пуш Docker-образа через переменные среды Jib...'
                     sh """
-                    mvn jib:build \
-                      -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
-                      -Djib.to.tags=latest \
-                      -Djib.to.auth.username=\$DOCKER_USER \
-                      -Djib.to.auth.password=\$DOCKER_PASS
-                    """
+            mvn clean jib:build \
+              -DskipTests \
+              -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
+              -Djib.to.tags=latest
+            """
                 }
             }
         }
