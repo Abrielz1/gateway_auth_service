@@ -1,6 +1,6 @@
 package com.nemo.gateway_auth_service.util.cripto;
 
-import com.nemo.gateway_auth_service.util.confguration.EncryptionProperties;
+import com.nemo.gateway_auth_service.app.security.configuration.EncryptionProperties;
 import com.nemo.gateway_auth_service.util.exception.exceptions.EncryptionDataFailureException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

@@ -1,4 +1,4 @@
-package com.nemo.gateway_auth_service.util.confguration;
+package com.nemo.gateway_auth_service.app.security.configuration;
 
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.context.properties.ConfigurationProperties;
