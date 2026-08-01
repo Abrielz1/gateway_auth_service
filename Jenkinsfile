@@ -14,9 +14,24 @@ pipeline {
 
         stage('Build Docker Image via Local Socket') {
             steps {
+                sh '''
+                apt-get update && apt-get install -y \
+                  ca-certificates \
+                  curl \
+                  gnupg \
+                  lsb-release
+                
+                mkdir -p /etc/apt/keyrings
+                curl -fsSL https://docker.com | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
+                
+                echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://docker.com $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+                
+                apt-get update && apt-get install -y docker-ce-cli
+                '''
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
+
 
         stage('Deploy to k3s Cluster') {
             steps {
