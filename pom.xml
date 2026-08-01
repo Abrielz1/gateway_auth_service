@@ -445,7 +445,7 @@
 				<version>3.4.0</version>
 				<configuration>
 				<from>
-					<image>amazoncorretto:21-alpine</image>
+					<image>public.ecr.aws/amazoncorretto/amazoncorretto:21-alpine</image>
 				</from>
 				<container>
 					<user>65534:65534</user>
