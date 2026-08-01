@@ -33,14 +33,6 @@ CREATE TABLE IF NOT EXISTS security.user_roles (
     FOREIGN KEY (user_id) REFERENCES security.users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS security.customers (
-user_id                 BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-registration_source     VARCHAR(255),
-is_banned               BOOLEAN NOT NULL DEFAULT false,
-invited_by_id           BIGINT,
-FOREIGN KEY (invited_by_id) REFERENCES security.users(id)
-);
-
 CREATE TABLE IF NOT EXISTS security.password_data(
 id                      BIGSERIAL PRIMARY KEY,
 password                VARCHAR(2048) NOT NULL,
@@ -81,10 +73,6 @@ CREATE INDEX IF NOT EXISTS idx_users_last_login ON security.users (last_login_ti
 CREATE INDEX IF NOT EXISTS idx_users_dob ON security.users (date_of_birth);
 CREATE INDEX IF NOT EXISTS idx_users_registration_brin ON security.users USING brin (registration_timestamp); -- специально использую brin для ранжирования
 CREATE INDEX IF NOT EXISTS idx_users_active_registration ON security.users (is_deleted, registration_timestamp) WHERE is_deleted = false;
-
-CREATE INDEX IF NOT EXISTS idx_employees_mentor ON security.employees(mentor_id);
-
-CREATE INDEX IF NOT EXISTS idx_customers_invited_by ON security.customers(invited_by_id);
 
 CREATE INDEX IF NOT EXISTS idx_phone_data_user_id ON security.phone_data(user_id);
 

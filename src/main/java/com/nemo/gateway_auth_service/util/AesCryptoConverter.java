@@ -23,7 +23,7 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class AesCryptoConverter implements AttributeConverter<String, String> {
 
-    @Value("${app.encryption.secret-key}")
+    @Value("${app.jwt.encryption.secret-key}")
     private String secretKeyString;
     private SecretKeySpec secretKey;
     private final SecureRandom secureRandom = new SecureRandom();

@@ -1,5 +1,6 @@
 package com.nemo.gateway_auth_service.app.security.jwt;
 
+import com.nemo.gateway_auth_service.app.domain.dto.JwtProperties;
 import com.nemo.gateway_auth_service.app.security.principal.AppUserDetails;
 import com.nemo.gateway_auth_service.util.IdGenerationServiceImpl;
 import com.nemo.gateway_auth_service.util.exception.exceptions.InvalidJwtAuthenticationException;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Collections;
@@ -35,27 +35,23 @@ public class JwtUtils {
 
     private final String ROLES = "roles";
 
-    @Value("${app.jwt.secret}")
-    private String rawSecret;
+   @Value("${app.jwt.secret}")
+    private final JwtProperties rawSecret;
 
-    @Value("${app.jwt.token-expiration}")
-    private Duration tokenExpiration;
-
-    @Value("${app.jwt.refresh-token-expiration}")
-    private Duration refreshTokenExpiration;
+    private final JwtProperties jwtProps;
 
     private SecretKey secretKey;
 
-    private final IdGenerationServiceImpl idGenerationService;
+ //   private final IdGenerationServiceImpl idGenerationService;
 
     @PostConstruct
     public void init() {
 
-        if (rawSecret == null || rawSecret.isBlank()) {
+        if (rawSecret == null || rawSecret.secret().isBlank()) {
             throw new IllegalArgumentException("JWT secret is not configured in application properties (app.jwt.secret)");
         }
         try {
-            this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(rawSecret), "HmacSHA512");
+            this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(rawSecret.secret()), "HmacSHA512");
             log.info("JWT secret key initialized successfully.");
         } catch (Exception e) {
             log.error("Invalid JWT secret key. It must be a Base64-encoded string.", e);
@@ -77,22 +73,23 @@ public class JwtUtils {
                 .claim("email", userDetails.getEmail())
                 .id(sessionId.toString())
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(tokenExpiration)))
+                .expiration(Date.from(now.plus(this.jwtProps.expiration().access())))
                 .signWith(secretKey)
                 .compact();
     }
 
     public String generateRefreshToken(AppUserDetails userDetails, UUID sessionId, Instant now) {
 
-        String refreshTokenUniqueUUId = this.idGenerationService.generateUniqueTokenId();
+       // String refreshTokenUniqueUUId = this.idGenerationService.generateUniqueTokenId();
         return Jwts.builder()
                 .subject(String.valueOf(userDetails.getId()))
                 .issuer(userDetails.getUsername())
-                .id(refreshTokenUniqueUUId)
+               // .id(refreshTokenUniqueUUId)
+                .id(UUID.randomUUID().toString())
                 .claim("sessionId", sessionId.toString())
                 .claim("email", userDetails.getEmail())
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(refreshTokenExpiration)))
+                .expiration(Date.from(now.plus(this.jwtProps.expiration().refresh())))
                 .signWith(secretKey)
                 .compact();
     }
@@ -106,7 +103,7 @@ public class JwtUtils {
         } catch (MalformedJwtException e) {
             log.warn("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            log.debug("JWT token is expired: {}", e.getMessage()); // Меняем на DEBUG, так как это штатная ситуация
+            log.debug("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
             log.warn("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {

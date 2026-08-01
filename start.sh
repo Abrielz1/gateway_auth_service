@@ -11,7 +11,7 @@ fi
 echo "Starting docker containers..."
 docker-compose up -d
 
-if[ -z "$1" ]; then
+if [ -z "$1" ]; then
     echo "Usage: $0 host:port [command]"
     exit 1
 fi

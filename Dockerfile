@@ -1,4 +1,4 @@
-FROM amazoncorretto:21-al2-full
+FROM amazoncorretto:21-alpine
 LABEL authors="Abriel"
 WORKDIR /app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
