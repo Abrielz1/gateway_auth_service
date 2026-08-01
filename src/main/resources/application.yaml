@@ -1,3 +1,48 @@
 spring:
+
   application:
     name: gateway_auth_service
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+    mongodb:
+      uri: mongodb://${MONGO_USER:admin}:${MONGO_PASSWORD:mongo_secret}@${MONGO_HOST:localhost}:27017/${MONGO_DB:auth_reports}?authSource=admin
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${SECURITY_DB_NAME:auth_gateway}
+    username: ${SECURITY_DB_USER:postgres}
+    password: ${SECURITY_DB_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    default-schema: security
+    schemas: security
+
+logging:
+  level:
+    org:
+      springframework:
+        orm:
+          jpa: INFO
+        JpaTransactionManager: DEBUG
+        transaction: INFO
+        interceptor: TRACE
+
+app:
+  jwt:
+    secret: ${APP_SECRET}
+    expiration:
+      access: 15m
+      refresh: 180d
+  encryption:
+    secret-key: ${AES_SECRET}

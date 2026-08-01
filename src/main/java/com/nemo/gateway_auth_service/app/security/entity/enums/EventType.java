@@ -1,0 +1,12 @@
+package com.nemo.gateway_auth_service.app.security.entity.enums;
+
+public enum EventType {
+    LOGIN_SUCCESS,
+    LOGIN_FAILURE,
+    TOKEN_PAYLOAD_SUSPICIOUS,
+    REFRESH_TOKEN_REPLAY_ATTACK,
+    SESSION_COMPROMISED_UNKNOWN_DEVICE,
+    SESSION_REVOKED_BY_USER,
+    SESSION_REVOKED_BY_SYSTEM,
+    POSSIBLE_HACKER_ATTACK
+}
