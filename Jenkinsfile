@@ -20,18 +20,20 @@ pipeline {
                         usernameVariable: 'SSH_USER',
                         passwordVariable: 'SSH_PASS'
                 )]) {
-                    echo 'убиваем старуй сборк на хуй...'
-                    sh "sshpass -p '${SSH_PASS}' ssh -o StrictHostKeyChecking=no ${SSH_USER}@192.168.1.60 'rm -rf /root/gateway-build && mkdir -p /root/gateway-build'"
+                    echo 'Доустанавливаем sshpass внутрь контейнера Jenkins...'
+                    sh 'apt-get update && apt-get install -y sshpass'
 
-                    echo 'из докера швыряем образ в k3s и...'
-                    sh "sshpass -p '${SSH_PASS}' scp -o StrictHostKeyChecking=no -r src pom.xml Dockerfile ${SSH_USER}@192.168.1.60:/root/gateway-build/"
+                    echo 'Убиваем старую сборку на хуй...'
+                    sh 'sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no $SSH_USER@192.168.1.60 "rm -rf /root/gateway-build && mkdir -p /root/gateway-build"'
 
-                    echo 'Запускаю сборку Docker внутри движка k3s... и...'
-                    sh "sshpass -p '${SSH_PASS}' ssh -o StrictHostKeyChecking=no ${SSH_USER}@192.168.1.60 'cd /root/gateway-build && docker build -t ${IMAGE_NAME} .'"
+                    echo 'Перекидываем исходный код и Dockerfile на виртуалку k3s...'
+                    sh 'sshpass -p "$SSH_PASS" scp -o StrictHostKeyChecking=no -r src pom.xml Dockerfile $SSH_USER@192.168.1.60:/root/gateway-build/'
+
+                    echo 'Запускаем сборку Docker внутри движка k3s...'
+                    sh 'sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no $SSH_USER@192.168.1.60 "cd /root/gateway-build && docker build -t ' + IMAGE_NAME + ' ."'
                 }
             }
         }
-
 
         stage('Deploy to k3s Cluster') {
             steps {
