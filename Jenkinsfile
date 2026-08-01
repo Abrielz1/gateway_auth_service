@@ -34,18 +34,13 @@ pipeline {
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
-                    echo 'Авторизуемся в Docker Hub стандартным способом...'
-                    sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin'
-
-                    echo 'Компилируем проект и пушим Docker-образ (Jib возьмет креды из системы)...'
-                    sh """
-            mvn clean package jib:build \
-              -DskipTests \
-              -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
-              -Djib.to.tags=latest
-            """
-                    echo 'Очищаем сессию авторизации на агенте...'
-                    sh 'docker logout'
+                    echo 'Компилируем проект и пушим Docker-образ через Jib напрямую...'
+                    sh 'mvn clean package jib:build ' +
+                            '-DskipTests ' +
+                            "-Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} " +
+                            '-Djib.to.tags=latest ' +
+                            '-Djib.to.auth.username=$DOCKER_USER ' +
+                            '-Djib.to.auth.password=$DOCKER_PASSWORD'
                 }
             }
         }
