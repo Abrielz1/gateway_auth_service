@@ -31,16 +31,17 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(
                         credentialsId: 'docker-hub-creds',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASSWORD'
+                        usernameVariable: 'HUB_USER',
+                        passwordVariable: 'HUB_PASS'
                 )]) {
-                    echo 'Компилируем проект и пушим Docker-образ через Jib напрямую...'
+                    echo 'Компилируем проект и пушим Docker-образ через экранированные параметры...'
+
                     sh 'mvn clean package jib:build ' +
                             '-DskipTests ' +
                             "-Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} " +
                             '-Djib.to.tags=latest ' +
-                            '-Djib.to.auth.username=$DOCKER_USER ' +
-                            '-Djib.to.auth.password=$DOCKER_PASSWORD'
+                            '-Djib.to.auth.username=' + HUB_USER + ' ' +
+                            '-Djib.to.auth.password=' + HUB_PASS
                 }
             }
         }
