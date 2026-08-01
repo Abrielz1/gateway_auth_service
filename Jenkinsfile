@@ -14,24 +14,26 @@ pipeline {
 
         stage('Build Docker Image via Local Socket') {
             steps {
+
                 sh '''
-                apt-get update && apt-get install -y \
-                  ca-certificates \
-                  curl \
-                  gnupg \
-                  lsb-release
+                # Скачиваем официальный статически скомпилированный бинарник Docker
+                curl -fsSL https://docker.com -o docker.tgz
                 
-                mkdir -p /etc/apt/keyrings
-                curl -fsSL https://docker.com | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
+                # Распаковываем архив
+                tar -xzvf docker.tgz
                 
-                echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://docker.com $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+                # Переносим исполняемый файл команды docker в системный путь
+                mv docker/docker /usr/local/bin/
                 
-                apt-get update && apt-get install -y docker-ce-cli
+                # Чистим за собой мусор
+                rm -rf docker docker.tgz
                 '''
+
+                sh 'docker version'
+
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
-
 
         stage('Deploy to k3s Cluster') {
             steps {
