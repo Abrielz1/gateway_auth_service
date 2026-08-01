@@ -11,7 +11,7 @@
 
 	<groupId>com.nemo</groupId>
 	<artifactId>gateway_auth_service</artifactId>
-	<version>0.0.1</version>
+	<version>0.2.1</version>
 	<name>gateway-auth-service</name>
 	<description>Edge Auth Gateway – REST-based authentication gateway service</description>
 
@@ -47,11 +47,13 @@
 			<version>${rate-limiter.version}</version>
 		</dependency>
 
+		<!--	под снос	-->
 		<dependency>
 			<groupId>me.paulschwarz</groupId>
 			<artifactId>spring-dotenv</artifactId>
 			<version>4.0.0</version>
 		</dependency>
+		<!--	под снос	-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -360,6 +362,7 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
@@ -382,6 +385,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -394,10 +398,12 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<executions>
+
 					<execution>
 						<id>default-compile</id>
 						<phase>compile</phase>
@@ -413,6 +419,7 @@
 							</annotationProcessorPaths>
 						</configuration>
 					</execution>
+
 					<execution>
 						<id>default-testCompile</id>
 						<phase>test-compile</phase>
@@ -428,6 +435,7 @@
 							</annotationProcessorPaths>
 						</configuration>
 					</execution>
+
 				</executions>
 			</plugin>
 
@@ -436,12 +444,25 @@
 				<artifactId>jib-maven-plugin</artifactId>
 				<version>3.4.0</version>
 				<configuration>
+				<from>
+					<image>amazoncorretto:21-alpine</image>
+				</from>
+				<container>
+					<user>65534:65534</user>
+					<ports>
+						<port>8080</port>
+					</ports>
+					<jvmFlags>
+						<jvmFlag>-Dfile.encoding=UTF-8</jvmFlag>
+					</jvmFlags>
+				</container>
+
 					<to>
-						<!-- Имя твоего репозитория в Docker Hub -->
-						<image>Abriel/gateway-auth-app</image>
+						<image>abriel/gateway-auth-app</image>
 					</to>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 </project>
