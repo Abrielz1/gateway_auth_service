@@ -18,11 +18,10 @@ spec:
       containers:
         - name: spring-app
           image: abriel/gateway-auth-app:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
 
-          # Подсовываем Спрингу адреса баз внутри кластера k3s
           env:
             - name: DB_HOST
               value: "auth-db"

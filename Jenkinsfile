@@ -1,68 +1,40 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'maven-3.9'
-    }
-
     environment {
-
-        DOCKER_REPO = "abriel/gateway-auth-app"
-        DOCKER_TAG = "v${env.BUILD_NUMBER}"
+        // Локальное имя образа в кэше докера вашей виртуалки
+        IMAGE_NAME = "abriel/gateway-auth-app:latest"
     }
 
     stages {
         stage('Checkout') {
             steps {
-
                 checkout scm
             }
         }
 
-        stage('Build Spring Boot') {
+        stage('Build Docker Image via SSH') {
             steps {
-                echo 'Компилируем проект через Maven...'
+                echo 'Очищаем старую папку сборки на виртуалке...'
+                sh "ssh root@192.168.1.60 'rm -rf /root/gateway-build && mkdir -p /root/gateway-build'"
 
-                sh 'mvn clean package -DskipTests'
-            }
-        }
+                echo 'Перекидываем исходный код и Dockerfile на виртуалку k3s...'
+                sh "scp -r src pom.xml Dockerfile root@192.168.1.60:/root/gateway-build/"
 
-        stage('Build Spring Boot Classes') {
-            steps {
-                echo 'Компилируем классы приложения без создания fat-jar... потому что Jib заёбал сука'
-                sh 'mvn clean compile -DskipTests'
-            }
-        }
-
-        stage('Build & Push Docker Image (via Jib)') {
-            steps {
-                withCredentials([usernamePassword(
-                        credentialsId: 'docker-hub-creds',
-                        usernameVariable: 'HUB_USER',
-                        passwordVariable: 'HUB_PASS'
-                )]) {
-                    echo 'Запускаем Jib ... но он тупое говно тупого говна'
-                    sh 'mvn jib:build ' +
-                            '-DskipTests ' +
-                            "-Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} " +
-                            '-Djib.to.tags=latest ' +
-                            '-Djib.to.auth.username=$HUB_USER ' +
-                            '-Djib.to.auth.password=$HUB_PASS ' +
-                            '-Djib.from.auth.username="" ' +
-                            '-Djib.from.auth.password=""'
-                }
+                echo 'Запускаем сборку Docker внутри движка k3s...'
+                // Docker сам скачает maven, скомпилирует Java 21 и положит образ в локальный кэш k3s!
+                sh "ssh root@192.168.1.60 'cd /root/gateway-build && docker build -t ${IMAGE_NAME} .'"
             }
         }
 
         stage('Deploy to k3s Cluster') {
             steps {
                 withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG')]) {
-
-                    echo 'или шас'
-                    sh "sed -i 's|image: .*|image: ${DOCKER_REPO}:${DOCKER_TAG}|g' k8s/app.yaml"
-
+                    echo 'Применяем манифест приложения k8s.yaml...'
                     sh "kubectl apply -f k8s/app.yaml --kubeconfig=$KUBECONFIG"
 
+                    echo 'Перезапускаем поды, чтобы k3s взял свежий локальный образ...'
+                    sh "kubectl rollout restart deployment/gateway-auth-app --kubeconfig=$KUBECONFIG"
                     sh "kubectl rollout status deployment/gateway-auth-app --kubeconfig=$KUBECONFIG"
                 }
             }
@@ -71,10 +43,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Билд и Деплой прошли успешно! Сервис в кластере обновлен!'
+            echo '✅ Билд и локальный Деплой прошли успешно! Архитектура работает!'
         }
         failure {
-            echo '❌ ОШИБКА! Билд упал. Проверь логи Jenkins.'
+            echo '❌ ОШИБКА! Проверь логи Jenkins.'
         }
     }
 }
