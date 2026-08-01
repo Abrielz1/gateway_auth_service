@@ -9,8 +9,8 @@ import java.security.SecureRandom;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
-@Service
+//@Slf4j
+//@Service
 @RequiredArgsConstructor
 public class IdGenerationServiceImpl  { //implements IdGenerationService
 
