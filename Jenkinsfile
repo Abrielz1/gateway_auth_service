@@ -30,7 +30,7 @@ pipeline {
         stage('Build & Push Docker Image (via Jib)') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-
+                    echo 'Сборка и пуш Docker-образа...'
                     sh """
                     mvn jib:build \
                       -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
