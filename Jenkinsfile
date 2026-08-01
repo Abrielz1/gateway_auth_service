@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven-3.9' // Имя должно СТРОГО совпадать с именем из шага 1
+        maven 'maven-3.9'
     }
 
     environment {
@@ -29,7 +29,6 @@ pipeline {
 
         stage('Build & Push Docker Image (via Jib)') {
             steps {
-                echo 'Собираем и пушим образ через Google Jib (без Docker-демона!)...'
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
 
                     sh """
