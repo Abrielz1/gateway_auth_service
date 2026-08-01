@@ -1,12 +1,12 @@
 package com.nemo.gateway_auth_service.util.cripto;
 
+import com.nemo.gateway_auth_service.util.confguration.EncryptionProperties;
 import com.nemo.gateway_auth_service.util.exception.exceptions.EncryptionDataFailureException;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -18,11 +18,11 @@ import java.util.Base64;
 
 @Slf4j
 @Converter
+@Component
 @RequiredArgsConstructor
 public class AesCryptoConverter implements AttributeConverter<String, String> {
 
-    @Value("${app.encryption.secret-key}")
-    private String secretKeyString;
+    private final EncryptionProperties secretKeyString;
     private SecretKeySpec secretKey;
     private final SecureRandom secureRandom = new SecureRandom();
 
@@ -35,12 +35,12 @@ public class AesCryptoConverter implements AttributeConverter<String, String> {
             return;
         }
 
-        if (secretKeyString == null || secretKeyString.isBlank()) {
+        if (secretKeyString == null || secretKeyString.secretKey().isBlank()) {
             throw new IllegalStateException("Encryption secret key is not configured or Spring context not ready!");
         }
 
         try {
-            byte[] decodedKey = Base64.getDecoder().decode(secretKeyString);
+            byte[] decodedKey = Base64.getDecoder().decode(secretKeyString.secretKey());
 
             if (decodedKey.length != 16 && decodedKey.length != 24 && decodedKey.length != 32) {
                 throw new IllegalStateException(
