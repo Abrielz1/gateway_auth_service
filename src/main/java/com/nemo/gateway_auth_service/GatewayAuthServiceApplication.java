@@ -3,7 +3,10 @@ package com.nemo.gateway_auth_service;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+		"com.nemo.gateway_auth_service.app",
+		"com.nemo.gateway_auth_service.util.confguration"
+})
 public class GatewayAuthServiceApplication {
 
 	public static void main(String[] args) {

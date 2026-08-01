@@ -23,11 +23,15 @@ import java.util.Base64;
 public class AesCryptoConverter implements AttributeConverter<String, String> {
 
     private final EncryptionProperties secretKeyString;
+
     private SecretKeySpec secretKey;
+
     private final SecureRandom secureRandom = new SecureRandom();
 
     private static final String ALGORITHM = "AES/GCM/NoPadding";
+
     private static final int IV_LENGTH_BYTES = 12;
+
     private static final int TAG_LENGTH_BITS = 128;
 
     private void ensureInitialized() {
