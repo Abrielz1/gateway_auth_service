@@ -19,8 +19,7 @@ pipeline {
             steps {
                 echo 'Компилируем проект через Maven...'
 
-                sh 'chmod +x mvnw'
-                sh './mvnw clean package -DskipTests'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
