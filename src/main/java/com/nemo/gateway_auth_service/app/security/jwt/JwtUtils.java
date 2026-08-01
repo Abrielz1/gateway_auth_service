@@ -2,7 +2,6 @@ package com.nemo.gateway_auth_service.app.security.jwt;
 
 import com.nemo.gateway_auth_service.app.domain.dto.JwtProperties;
 import com.nemo.gateway_auth_service.app.security.principal.AppUserDetails;
-import com.nemo.gateway_auth_service.util.IdGenerationServiceImpl;
 import com.nemo.gateway_auth_service.util.exception.exceptions.InvalidJwtAuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -14,7 +13,6 @@ import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -35,9 +33,6 @@ public class JwtUtils {
 
     private final String ROLES = "roles";
 
-   @Value("${app.jwt.secret}")
-    private final JwtProperties rawSecret;
-
     private final JwtProperties jwtProps;
 
     private SecretKey secretKey;
@@ -47,11 +42,11 @@ public class JwtUtils {
     @PostConstruct
     public void init() {
 
-        if (rawSecret == null || rawSecret.secret().isBlank()) {
+        if (this.jwtProps == null || this.jwtProps.secret().isBlank()) {
             throw new IllegalArgumentException("JWT secret is not configured in application properties (app.jwt.secret)");
         }
         try {
-            this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(rawSecret.secret()), "HmacSHA512");
+            this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(jwtProps.secret()), "HmacSHA512");
             log.info("JWT secret key initialized successfully.");
         } catch (Exception e) {
             log.error("Invalid JWT secret key. It must be a Base64-encoded string.", e);
