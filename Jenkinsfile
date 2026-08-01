@@ -31,22 +31,24 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(
                         credentialsId: 'docker-hub-creds',
-                        usernameVariable: 'USER_HUB',
-                        passwordVariable: 'PASS_HUB'
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
-                    echo 'Компилируем проект и пушим Docker-образ...'
+                    echo 'Авторизуемся в Docker Hub стандартным способом...'
+                    sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin'
+
+                    echo 'Компилируем проект и пушим Docker-образ (Jib возьмет креды из системы)...'
                     sh """
             mvn clean package jib:build \
               -DskipTests \
               -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
-              -Djib.to.tags=latest \
-              -Djib.to.auth.username=${USER_HUB} \
-              -Djib.to.auth.password=${PASS_HUB}
+              -Djib.to.tags=latest
             """
+                    echo 'Очищаем сессию авторизации на агенте...'
+                    sh 'docker logout'
                 }
             }
         }
-
 
         stage('Deploy to k3s Cluster') {
             steps {
