@@ -31,19 +31,22 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(
                         credentialsId: 'docker-hub-creds',
-                        usernameVariable: 'JIB_TO_AUTH_USERNAME',
-                        passwordVariable: 'JIB_TO_AUTH_PASSWORD'
+                        usernameVariable: 'USER_HUB',
+                        passwordVariable: 'PASS_HUB'
                 )]) {
-                    echo 'Сборка и пуш Docker-образа через переменные среды Jib...'
+                    echo 'Компилируем проект и пушим Docker-образ...'
                     sh """
-            mvn clean package jib:build \\
-              -DskipTests \\
-              -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \\
-              -Djib.to.tags=latest
+            mvn clean package jib:build \
+              -DskipTests \
+              -Djib.to.image=${DOCKER_REPO}:${DOCKER_TAG} \
+              -Djib.to.tags=latest \
+              -Djib.to.auth.username=${USER_HUB} \
+              -Djib.to.auth.password=${PASS_HUB}
             """
                 }
             }
         }
+
 
         stage('Deploy to k3s Cluster') {
             steps {
