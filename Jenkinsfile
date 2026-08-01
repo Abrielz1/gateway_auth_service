@@ -12,28 +12,41 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image via Local Socket') {
-            steps {
+        pipeline {
+            agent any
 
-                sh '''
-                # Скачиваем официальный статически скомпилированный бинарник Docker
-                curl -fsSL https://docker.com -o docker.tgz
-                
-                # Распаковываем архив
-                tar -xzvf docker.tgz
-                
-                # Переносим исполняемый файл команды docker в системный путь
-                mv docker/docker /usr/local/bin/
-                
-                # Чистим за собой мусор
-                rm -rf docker docker.tgz
-                '''
+            environment {
+                IMAGE_NAME = "abriel/gateway-auth-app:latest"
+            }
 
-                sh 'docker version'
+            stages {
+                stage('Checkout') {
+                    steps {
+                        checkout scm
+                    }
+                }
 
-                sh "docker build -t ${IMAGE_NAME} ."
+                stage('Build Docker Image via Local Socket') {
+                    steps {
+
+                        sh "docker build -t ${IMAGE_NAME} ."
+                    }
+                }
+
+                stage('Deploy to k3s Cluster') {
+                    steps {
+                        withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG')]) {
+
+                            sh "kubectl apply -f k8s/app.yaml --kubeconfig=$KUBECONFIG"
+
+                            sh "kubectl rollout restart deployment/gateway-auth-app --kubeconfig=$KUBECONFIG"
+                            sh "kubectl rollout status deployment/gateway-auth-app --kubeconfig=$KUBECONFIG"
+                        }
+                    }
+                }
             }
         }
+
 
         stage('Deploy to k3s Cluster') {
             steps {
