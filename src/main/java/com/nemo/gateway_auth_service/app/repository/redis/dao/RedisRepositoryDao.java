@@ -138,7 +138,7 @@ public class RedisRepositoryDao<K, V> implements RedisRepository<K, V> {
             throw new IllegalArgumentException(MESSAGE);
         }
 
-        return objectMapper.writeValueAsString(key);
+        return key instanceof String ? (String) key : key.toString();
     }
 
     private String serializeValue(V value) throws JsonProcessingException {
