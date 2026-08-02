@@ -25,19 +25,10 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Client extends User {
+public class Admin extends User {
 
-    @Column(name = "registration_source")
-    @ToString.Include
-    private String registrationSource;
-
-    @Column(name = "is_banned", nullable = false)
+    @Column(name = "is_active", nullable = false)
     @Builder.Default
     @ToString.Include
-    private Boolean isBanned = false;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invited_by_id")
-    @ToString.Exclude
-    private User invitedBy;
+    private Boolean isActive = false;
 }

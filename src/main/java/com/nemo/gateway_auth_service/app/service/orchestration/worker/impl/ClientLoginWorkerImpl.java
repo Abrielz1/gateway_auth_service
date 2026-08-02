@@ -1,6 +1,6 @@
 package com.nemo.gateway_auth_service.app.service.orchestration.worker.impl;
 
-import com.nemo.gateway_auth_service.app.domain.entity.child.Client;
+import com.nemo.gateway_auth_service.app.domain.entity.child.Admin;
 import com.nemo.gateway_auth_service.app.domain.entity.parent.EmailData;
 import com.nemo.gateway_auth_service.app.domain.entity.parent.PasswordData;
 import com.nemo.gateway_auth_service.app.domain.entity.parent.User;
@@ -58,7 +58,7 @@ public class ClientLoginWorkerImpl implements ClientLoginWorker {
                 .findFirst()
                 .orElseThrow(() -> new BadCredentialsException("Invalid data"));
 
-        Optional<Client> client = Optional.empty();
+        Optional<Admin> client = Optional.empty();
 
       if (strategyCurrent instanceof EmailStrategyImpl) {
           client = this.clientRepository.findByEmail(id);
@@ -72,7 +72,7 @@ public class ClientLoginWorkerImpl implements ClientLoginWorker {
           client = this.clientRepository.findByLogin(id);
       }
 
-        Client clientFromDb = client.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+        Admin clientFromDb = client.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 
       String passwordFromLogin = loginRequest.password();
 
@@ -131,7 +131,7 @@ public class ClientLoginWorkerImpl implements ClientLoginWorker {
         var tokenFromRedis = this.clientSessionWorker.getRefreshTokenFromRedis(userId);
         String email = claims.get("email", String.class);
 
-        Client clientFromDb = this.clientRepository.findById(userId)
+        Admin clientFromDb = this.clientRepository.findById(userId)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
 
         List<SimpleGrantedAuthority> authorities = clientFromDb.getRoles().stream()
