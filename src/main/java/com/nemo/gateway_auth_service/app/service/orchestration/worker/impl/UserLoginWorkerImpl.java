@@ -132,7 +132,7 @@ public class UserLoginWorkerImpl implements UserLoginWorker {
         var tokenFromRedis = this.clientSessionWorker.getRefreshTokenFromRedis(userId);
         String email = claims.get("email", String.class);
 
-        User clientFromDb = this.userRepository.findById(userId)
+        User clientFromDb = this.userRepository.findByUuid(userId)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
 
         List<SimpleGrantedAuthority> authorities = clientFromDb.getRoles().stream()

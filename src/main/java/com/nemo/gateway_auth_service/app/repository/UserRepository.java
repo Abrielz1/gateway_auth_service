@@ -38,4 +38,6 @@ public interface UserRepository extends JpaRepository<User, UUID
           WHERE LOWER(e.email) = LOWER(:email)
           """)
     Optional<User> findByEmail(String email);
+
+    Optional<User> findByUuid(UUID uuid);
 }
