@@ -42,7 +42,7 @@ public class ClientTo {
                 .password(passwordEncoder.encode(clientRegisterRequestDTO.password()))
                 .timeWhenSet(Instant.now())
                 .isActive(true)
-                .timeToLive(Instant.now().minusSeconds(31536000L))
+                .timeToLive(Instant.now().plusSeconds(31536000L))
                 .build();
 
         var loginData = LoginData.builder()
