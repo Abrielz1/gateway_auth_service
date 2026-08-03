@@ -1,6 +1,7 @@
 package com.nemo.gateway_auth_service.app.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nemo.gateway_auth_service.app.repository.UserRepository;
 import com.nemo.gateway_auth_service.app.security.principal.AppUserDetails;
 import com.nemo.gateway_auth_service.app.security.service.RateLimiterService;
 import com.nemo.gateway_auth_service.util.exception.exceptions.InvalidJwtAuthenticationException;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -35,6 +37,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final RateLimiterService rateLimiterService;
 
     private final ObjectMapper objectMapper;
+
+    private final UserRepository userRepository;
 
 // todo для v1 перекинуть код с authservice
 
@@ -67,13 +71,26 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             final Claims claims = jwtUtils.getAllClaimsFromToken(token);
+            var userId = UUID.fromString(claims.getSubject());
+
+            var userFromDB = this.userRepository.findByUuid(userId);
+            var isEnabled = false;
+            var accountNonLocked = false;
+            if (userFromDB.isPresent()) {
+                isEnabled = Boolean.TRUE.equals(userFromDB.get().getEnabled());
+                accountNonLocked = !Boolean.TRUE.equals(userFromDB.get().getIsDeleted());
+            } else {
+                throw new InvalidJwtAuthenticationException("User not found");
+            }
 
             AppUserDetails userDetails = new AppUserDetails(
-                    this.jwtUtils.getUserId(claims),
+                    userId,
                     this.jwtUtils.getEmail(claims),
-                    "",
                     this.jwtUtils.getAuthorities(claims),
-                    jwtUtils.getExpiration(claims)
+                    "",
+                    jwtUtils.getExpiration(claims),
+                    isEnabled,
+                    accountNonLocked
             );
 
             this.setAuthentication(request, userDetails);

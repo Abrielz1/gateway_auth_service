@@ -97,7 +97,6 @@ public class UserLoginWorkerImpl implements UserLoginWorker {
                 .findFirst()
                 .map(EmailData::getEmail).orElse("");
 
-        User user = clientFromDb;
         AppUserDetails appUserDetails = new AppUserDetails(
                 clientFromDb.getUserUUID(),
                 email,
