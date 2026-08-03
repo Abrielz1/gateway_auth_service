@@ -10,7 +10,6 @@ import com.nemo.gateway_auth_service.web.model.request.UserRegistrationRequestDT
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
