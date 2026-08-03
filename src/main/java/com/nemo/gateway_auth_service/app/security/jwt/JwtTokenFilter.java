@@ -73,7 +73,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             final Claims claims = jwtUtils.getAllClaimsFromToken(token);
             var userId = UUID.fromString(claims.getSubject());
 
-            var userFromDB = this.userRepository.findByUuid(userId);
+            var userFromDB = this.userRepository.findByUserUUID(userId);
             var isEnabled = false;
             var accountNonLocked = false;
             if (userFromDB.isPresent()) {

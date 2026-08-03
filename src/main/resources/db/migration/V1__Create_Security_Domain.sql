@@ -75,7 +75,6 @@ CREATE TABLE IF NOT EXISTS security.phone_data
 
 CREATE INDEX IF NOT EXISTS idx_users_not_deleted ON security.users (is_deleted, id) WHERE is_deleted = false;
 CREATE INDEX IF NOT EXISTS idx_users_last_login ON security.users (last_login_timestamp);
-CREATE INDEX IF NOT EXISTS idx_users_dob ON security.users (date_of_birth);
 CREATE INDEX IF NOT EXISTS idx_users_registration_brin ON security.users USING brin (registration_timestamp);
 CREATE INDEX IF NOT EXISTS idx_users_active_registration ON security.users (is_deleted, registration_timestamp) WHERE is_deleted = false;
 

@@ -39,9 +39,6 @@ public interface UserRepository extends JpaRepository<User, UUID
           """)
     Optional<User> findByEmail(String email);
 
-    Optional<User> findByUuid(UUID uuid);
+    Optional<User> findByUserUUID(UUID uuid);
 
-    boolean isEnabledByUuid(UUID uuid);
-
-    boolean isLockedByUuid(UUID uuid);
 }

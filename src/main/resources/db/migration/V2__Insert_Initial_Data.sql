@@ -7,8 +7,8 @@ admin_uuid UUID := '00000000-0000-0000-0000-000000000001';
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM security.users WHERE user_uuid = admin_uuid) THEN
 
-        INSERT INTO security.users (user_uuid, date_of_birth, is_enabled, is_deleted, registration_timestamp)
-        VALUES (admin_uuid, '1990-01-01', true, false, NOW())
+        INSERT INTO security.users (user_uuid, is_enabled, is_deleted, registration_timestamp)
+        VALUES (admin_uuid, true, false, NOW())
         RETURNING id INTO admin_id;
 
 INSERT INTO security.login_data (login, user_id)
