@@ -23,9 +23,6 @@ VALUES (
            admin_id
        );
 
-INSERT INTO security.admins (user_id, is_active)
-VALUES (admin_id, true);
-
 INSERT INTO security.email_data (email, user_id)
 VALUES ('admin@nemo.com', admin_id);
 
