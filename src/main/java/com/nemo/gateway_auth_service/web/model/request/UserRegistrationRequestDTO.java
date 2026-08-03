@@ -20,6 +20,7 @@ public record UserRegistrationRequestDTO(
         @Size(min = 8, max = 64, message = "Пароль должен быть от 8 до 64 символов")
         String password,
 
+        @NotBlank(message = "Телефон не может быть пустым")
         @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Неверный формат телефона")
         String phone) {
 }

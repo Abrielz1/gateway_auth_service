@@ -1,11 +1,17 @@
 package com.nemo.gateway_auth_service.util.mapper.client.to;
 
+import com.nemo.gateway_auth_service.app.domain.EmailData;
+import com.nemo.gateway_auth_service.app.domain.LoginData;
+import com.nemo.gateway_auth_service.app.domain.PasswordData;
+import com.nemo.gateway_auth_service.app.domain.PhoneData;
 import com.nemo.gateway_auth_service.app.domain.User;
 import com.nemo.gateway_auth_service.app.domain.entity.enums.RoleType;
 import com.nemo.gateway_auth_service.web.model.request.UserRegistrationRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,11 +23,37 @@ public class ClientTo {
 
     public User toEntity(UserRegistrationRequestDTO clientRegisterRequestDTO) {
 
-        return User.builder()
+        var user = User.builder()
                 .userUUID(UUID.randomUUID())
                 .enabled(true)
                 .isDeleted(false)
                 .roles(Set.of(RoleType.ROLE_CLIENT))
                 .build();
+
+        var emailData = EmailData.builder()
+                .email(clientRegisterRequestDTO.email())
+                .build();
+
+        var phoneData = PhoneData.builder()
+                .phone(clientRegisterRequestDTO.phone())
+                .build();
+
+        var passwordData = PasswordData.builder()
+                .password(passwordEncoder.encode(clientRegisterRequestDTO.password()))
+                .timeWhenSet(Instant.now())
+                .isActive(true)
+                .timeToLive(Instant.now().minusSeconds(31536000L))
+                .build();
+
+        var loginData = LoginData.builder()
+                .login(clientRegisterRequestDTO.username())
+                .build();
+
+        user.addEmailData(emailData);
+        user.addPhoneData(phoneData);
+        user.addPasswordData(passwordData);
+        user.addLoginData(loginData);
+
+        return user;
     }
 }
