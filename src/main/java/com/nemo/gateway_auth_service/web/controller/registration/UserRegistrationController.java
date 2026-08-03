@@ -4,11 +4,13 @@ import com.nemo.gateway_auth_service.app.service.orchestration.facade.UserRegist
 import com.nemo.gateway_auth_service.web.model.request.UserRegistrationRequestDTO;
 import com.nemo.gateway_auth_service.web.model.response.UserRegistrationResponseDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +27,7 @@ public class UserRegistrationController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserRegistrationResponseDto registerNewClient(UserRegistrationRequestDTO request) {
+    public UserRegistrationResponseDto registerNewClient(@Valid @RequestBody UserRegistrationRequestDTO request) {
 
         log.info("Client registration attempt: {}", request.email());
         return this.clientRegistrationFacade.register(request);

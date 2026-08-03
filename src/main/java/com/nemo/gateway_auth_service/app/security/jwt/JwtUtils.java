@@ -66,6 +66,7 @@ public class JwtUtils {
                 .claim("userId", userDetails.getId())
                 .claim(ROLES, roles)
                 .claim("email", userDetails.getEmail())
+                .claim("token_type", "Access")
                 .id(sessionId.toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(this.jwtProps.expiration().access())))
@@ -83,6 +84,7 @@ public class JwtUtils {
                 .id(UUID.randomUUID().toString())
                 .claim("sessionId", sessionId.toString())
                 .claim("email", userDetails.getEmail())
+                .claim("token_type", "Refresh")
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(this.jwtProps.expiration().refresh())))
                 .signWith(secretKey)
@@ -127,7 +129,7 @@ public class JwtUtils {
     }
 
     public String getEmail(Claims claims) {
-        return claims.getSubject();
+        return claims.get("email", String.class);
     }
 
     public Instant getExpiration(Claims claims) {
