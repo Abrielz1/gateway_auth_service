@@ -18,6 +18,7 @@ import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,6 +56,7 @@ import java.util.Set;
 @ToString()
 @SQLRestriction("is_deleted = false")
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
