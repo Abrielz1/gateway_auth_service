@@ -1,4 +1,4 @@
-package com.nemo.gateway_auth_service.app.domain.entity.parent;
+package com.nemo.gateway_auth_service.app.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -19,23 +21,24 @@ import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 import java.util.Objects;
 
+@NamedEntityGraph(name = "PhoneData.withUser", attributeNodes = @NamedAttributeNode("user"))
 @Getter
 @Setter
 @Builder
 @ToString
 @NoArgsConstructor
-@Entity
-@Table(name = "login_data", schema = "security")
 @AllArgsConstructor
-public class LoginData {
+@Entity
+@Table(name = "phone_data", schema = "security")
+public class PhoneData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @Column(name = "login", nullable = false, unique = true, length = 256)
-    private String login;
+    @Column(name = "phone", unique = true, nullable = false)
+    private String phone;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -52,8 +55,8 @@ public class LoginData {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        LoginData loginData = (LoginData) o;
-        return getId() != null && Objects.equals(getId(), loginData.getId());
+        PhoneData phoneData = (PhoneData) o;
+        return getId() != null && Objects.equals(getId(), phoneData.getId());
     }
 
     @Override

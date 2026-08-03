@@ -1,8 +1,8 @@
 package com.nemo.gateway_auth_service.web.controller.secutiry;
 
-import com.nemo.gateway_auth_service.app.service.orchestration.facade.ClientLoginFacade;
-import com.nemo.gateway_auth_service.web.model.request.ClientLoginRequestDTO;
-import com.nemo.gateway_auth_service.web.model.request.ClientLogoutRequestDto;
+import com.nemo.gateway_auth_service.app.service.orchestration.facade.UserLoginFacade;
+import com.nemo.gateway_auth_service.web.model.request.UserLoginRequestDTO;
+import com.nemo.gateway_auth_service.web.model.request.UserLogoutRequestDto;
 import com.nemo.gateway_auth_service.web.model.request.RefreshTokenRequestDto;
 import com.nemo.gateway_auth_service.web.model.response.AuthTokenDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthClientController {
 
-    private final ClientLoginFacade clientLoginFacade;
+    private final UserLoginFacade clientLoginFacade;
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public AuthTokenDto login(@Valid @RequestBody ClientLoginRequestDTO loginRequestDTO) {
+    public AuthTokenDto login(@Valid @RequestBody UserLoginRequestDTO loginRequestDTO) {
 
         return this.clientLoginFacade.login(loginRequestDTO);
     }
@@ -43,7 +43,7 @@ public class AuthClientController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/logout")
-    public void logout(@Valid @RequestBody ClientLogoutRequestDto clientLogoutRequestDTO) {
+    public void logout(@Valid @RequestBody UserLogoutRequestDto clientLogoutRequestDTO) {
 
         this.clientLoginFacade.logout(clientLogoutRequestDTO);
     }

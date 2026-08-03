@@ -17,12 +17,19 @@ public class AppUserDetails implements UserDetails {
 
     private final String email;
 
+    private final Collection<? extends GrantedAuthority> authorities;
+
     @JsonIgnore
     private final String password;
 
-    private final Collection<? extends GrantedAuthority> authorities;
-
+    @JsonIgnore
     private final Instant expiration;
+
+    @JsonIgnore
+    private final boolean enabled;
+
+    @JsonIgnore
+    private final boolean accountNonLocked;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -43,28 +50,24 @@ public class AppUserDetails implements UserDetails {
     @Override
     public boolean isAccountNonExpired() {
 
-        // todo докинуть проверку флага
-        return true;
+        return this.accountNonLocked;
     }
 
     @Override
     public boolean isAccountNonLocked() {
 
-        // todo докинуть проверку флага
-        return true;
+        return this.accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
 
-        // todo докинуть проверку флага
-        return true;
+        return this.expiration == null || this.expiration.isAfter(Instant.now());
     }
 
     @Override
     public boolean isEnabled() {
 
-        // todo докинуть проверку флага
-        return true;
+        return this.enabled;
     }
 }

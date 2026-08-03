@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS security.users
 (
     id                     BIGSERIAL PRIMARY KEY NOT NULL,
     user_uuid              UUID UNIQUE           NOT NULL,
-    date_of_birth          DATE                  NOT NULL,
     is_enabled             BOOLEAN               NOT NULL,
     is_deleted             BOOLEAN               NOT NULL DEFAULT false,
     deleted_at             TIMESTAMPTZ                    DEFAULT null,
@@ -32,13 +31,6 @@ CREATE TABLE IF NOT EXISTS security.user_roles
     user_id BIGINT                  NOT NULL,
     role    security.role_type_enum NOT NULL,
     PRIMARY KEY (user_id, role),
-    FOREIGN KEY (user_id) REFERENCES security.users (id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS security.admins
-(
-    user_id   BIGINT PRIMARY KEY,
-    is_active BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES security.users (id) ON DELETE CASCADE
 );
 
@@ -84,7 +76,7 @@ CREATE TABLE IF NOT EXISTS security.phone_data
 CREATE INDEX IF NOT EXISTS idx_users_not_deleted ON security.users (is_deleted, id) WHERE is_deleted = false;
 CREATE INDEX IF NOT EXISTS idx_users_last_login ON security.users (last_login_timestamp);
 CREATE INDEX IF NOT EXISTS idx_users_dob ON security.users (date_of_birth);
-CREATE INDEX IF NOT EXISTS idx_users_registration_brin ON security.users USING brin (registration_timestamp); -- специально использую brin для ранжирования
+CREATE INDEX IF NOT EXISTS idx_users_registration_brin ON security.users USING brin (registration_timestamp);
 CREATE INDEX IF NOT EXISTS idx_users_active_registration ON security.users (is_deleted, registration_timestamp) WHERE is_deleted = false;
 
 CREATE INDEX IF NOT EXISTS idx_phone_data_user_id ON security.phone_data (user_id);

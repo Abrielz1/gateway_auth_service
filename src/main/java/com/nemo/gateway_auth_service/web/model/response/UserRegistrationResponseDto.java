@@ -4,5 +4,5 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record ClientRegistrationResponseDto(String userId, List<String> contacts) {
+public record UserRegistrationResponseDto(String userId, List<String> contacts) {
 }

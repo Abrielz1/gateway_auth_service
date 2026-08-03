@@ -1,6 +1,6 @@
 package com.nemo.gateway_auth_service.app.repository;
 
-import com.nemo.gateway_auth_service.app.domain.entity.parent.PasswordData;
+import com.nemo.gateway_auth_service.app.domain.PasswordData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

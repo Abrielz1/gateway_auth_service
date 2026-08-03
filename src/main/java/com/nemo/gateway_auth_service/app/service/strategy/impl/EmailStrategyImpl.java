@@ -1,12 +1,12 @@
 package com.nemo.gateway_auth_service.app.service.strategy.impl;
 
-import com.nemo.gateway_auth_service.app.service.strategy.ClientLookupStrategy;
+import com.nemo.gateway_auth_service.app.service.strategy.UserLookupStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class EmailStrategyImpl implements ClientLookupStrategy {
+public class EmailStrategyImpl implements UserLookupStrategy {
 
     @Override
     public boolean supports(String identifier) {

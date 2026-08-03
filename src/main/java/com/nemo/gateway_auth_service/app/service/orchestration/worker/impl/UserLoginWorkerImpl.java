@@ -1,19 +1,18 @@
 package com.nemo.gateway_auth_service.app.service.orchestration.worker.impl;
 
-import com.nemo.gateway_auth_service.app.domain.entity.child.Admin;
-import com.nemo.gateway_auth_service.app.domain.entity.parent.EmailData;
-import com.nemo.gateway_auth_service.app.domain.entity.parent.PasswordData;
-import com.nemo.gateway_auth_service.app.domain.entity.parent.User;
-import com.nemo.gateway_auth_service.app.repository.ClientRepository;
+import com.nemo.gateway_auth_service.app.domain.EmailData;
+import com.nemo.gateway_auth_service.app.domain.PasswordData;
+import com.nemo.gateway_auth_service.app.domain.User;
+import com.nemo.gateway_auth_service.app.repository.UserRepository;
 import com.nemo.gateway_auth_service.app.security.jwt.JwtUtils;
 import com.nemo.gateway_auth_service.app.security.principal.AppUserDetails;
-import com.nemo.gateway_auth_service.app.service.orchestration.worker.ClientLoginWorker;
-import com.nemo.gateway_auth_service.app.service.orchestration.worker.ClientSessionWorker;
-import com.nemo.gateway_auth_service.app.service.strategy.ClientLookupStrategy;
+import com.nemo.gateway_auth_service.app.service.orchestration.worker.UserLoginWorker;
+import com.nemo.gateway_auth_service.app.service.orchestration.worker.UserSessionWorker;
+import com.nemo.gateway_auth_service.app.service.strategy.UserLookupStrategy;
 import com.nemo.gateway_auth_service.app.service.strategy.impl.EmailStrategyImpl;
 import com.nemo.gateway_auth_service.app.service.strategy.impl.LoginStrategyImpl;
 import com.nemo.gateway_auth_service.app.service.strategy.impl.PhoneStrategyImpl;
-import com.nemo.gateway_auth_service.web.model.request.ClientLoginRequestDTO;
+import com.nemo.gateway_auth_service.web.model.request.UserLoginRequestDTO;
 import com.nemo.gateway_auth_service.web.model.request.RefreshTokenRequestDto;
 import com.nemo.gateway_auth_service.web.model.response.AuthTokenDto;
 import lombok.RequiredArgsConstructor;
@@ -33,15 +32,15 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ClientLoginWorkerImpl implements ClientLoginWorker {
+public class UserLoginWorkerImpl implements UserLoginWorker {
 
-    private final ClientRepository clientRepository;
+    private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-    private final List<ClientLookupStrategy> lookupStrategies;
+    private final List<UserLookupStrategy> lookupStrategies;
 
-    private final ClientSessionWorker clientSessionWorker;
+    private final UserSessionWorker clientSessionWorker;
 
     private final JwtUtils jwtUtils;
 
@@ -49,30 +48,30 @@ public class ClientLoginWorkerImpl implements ClientLoginWorker {
 
     @Override
     @Transactional(readOnly = true)
-    public AuthTokenDto login(ClientLoginRequestDTO loginRequest) {
+    public AuthTokenDto login(UserLoginRequestDTO loginRequest) {
 
         String id = loginRequest.clientIdentifier();
 
-        ClientLookupStrategy strategyCurrent = this.lookupStrategies.stream()
+        UserLookupStrategy strategyCurrent = this.lookupStrategies.stream()
                 .filter(strategy -> strategy.supports(id))
                 .findFirst()
                 .orElseThrow(() -> new BadCredentialsException("Invalid data"));
 
-        Optional<Admin> client = Optional.empty();
+        Optional<User> client = Optional.empty();
 
       if (strategyCurrent instanceof EmailStrategyImpl) {
-          client = this.clientRepository.findByEmail(id);
+          client = this.userRepository.findByEmail(id);
       }
 
       if (strategyCurrent instanceof PhoneStrategyImpl) {
-          client = this.clientRepository.findByPhone(id);
+          client = this.userRepository.findByPhone(id);
       }
 
       if (strategyCurrent instanceof LoginStrategyImpl) {
-          client = this.clientRepository.findByLogin(id);
+          client = this.userRepository.findByLogin(id);
       }
 
-        Admin clientFromDb = client.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+        User clientFromDb = client.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 
       String passwordFromLogin = loginRequest.password();
 
@@ -98,13 +97,15 @@ public class ClientLoginWorkerImpl implements ClientLoginWorker {
                 .findFirst()
                 .map(EmailData::getEmail).orElse("");
 
-        User user = (User)clientFromDb;
+        User user = clientFromDb;
         AppUserDetails appUserDetails = new AppUserDetails(
                 clientFromDb.getUserUUID(),
                 email,
-                "",
                 authorities,
-                null
+                passwordFromDB,
+                null,
+                Boolean.TRUE.equals(clientFromDb.getEnabled()),
+                !Boolean.TRUE.equals(clientFromDb.getIsDeleted())
 
         );
 
@@ -131,7 +132,7 @@ public class ClientLoginWorkerImpl implements ClientLoginWorker {
         var tokenFromRedis = this.clientSessionWorker.getRefreshTokenFromRedis(userId);
         String email = claims.get("email", String.class);
 
-        Admin clientFromDb = this.clientRepository.findById(userId)
+        User clientFromDb = this.userRepository.findById(userId)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
 
         List<SimpleGrantedAuthority> authorities = clientFromDb.getRoles().stream()
@@ -152,9 +153,11 @@ public class ClientLoginWorkerImpl implements ClientLoginWorker {
         AppUserDetails appUserDetails = new AppUserDetails(
                 userId,
                 email,
-                "",
                 authorities,
-                null
+                "",
+                null,
+                Boolean.TRUE.equals(clientFromDb.getEnabled()),
+                !Boolean.TRUE.equals(clientFromDb.getIsDeleted())
         );
 
         var now = Instant.now();

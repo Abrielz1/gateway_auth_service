@@ -4,7 +4,7 @@ import com.nemo.gateway_auth_service.app.domain.dto.JwtProperties;
 import com.nemo.gateway_auth_service.app.domain.dto.redis.AccessTokenKey;
 import com.nemo.gateway_auth_service.app.domain.dto.redis.RefreshTokenKey;
 import com.nemo.gateway_auth_service.app.repository.redis.dao.RedisRepositoryDao;
-import com.nemo.gateway_auth_service.app.service.orchestration.worker.ClientSessionWorker;
+import com.nemo.gateway_auth_service.app.service.orchestration.worker.UserSessionWorker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ClientSessionWorkerImpl implements ClientSessionWorker {
+public class UserSessionWorkerImpl implements UserSessionWorker {
 
     private final RedisRepositoryDao<AccessTokenKey, String> accessTokenKeyRedisRepository;
 

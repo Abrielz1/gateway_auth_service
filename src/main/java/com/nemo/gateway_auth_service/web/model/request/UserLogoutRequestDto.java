@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 @Builder
-public record ClientLogoutRequestDto(@NotBlank String refreshToken) {
+public record UserLogoutRequestDto(@NotBlank String refreshToken) {
 }

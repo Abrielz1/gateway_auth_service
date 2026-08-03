@@ -2,7 +2,7 @@ package com.nemo.gateway_auth_service.util.mapper.client.to;
 
 import com.nemo.gateway_auth_service.app.domain.entity.child.Admin;
 import com.nemo.gateway_auth_service.app.domain.entity.enums.RoleType;
-import com.nemo.gateway_auth_service.web.model.request.ClientRegistrationRequestDTO;
+import com.nemo.gateway_auth_service.web.model.request.UserRegistrationRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class ClientTo {
     private final PasswordEncoder passwordEncoder;
 
 
-    public Admin toEntity(ClientRegistrationRequestDTO clientRegisterRequestDTO) {
+    public Admin toEntity(UserRegistrationRequestDTO clientRegisterRequestDTO) {
 
         LocalDate dateOfBirth;
         try {

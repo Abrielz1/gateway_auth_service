@@ -1,4 +1,4 @@
-package com.nemo.gateway_auth_service.app.domain.entity.parent;
+package com.nemo.gateway_auth_service.app.domain;
 
 import com.nemo.gateway_auth_service.app.domain.entity.enums.RoleType;
 import jakarta.persistence.CascadeType;
@@ -12,24 +12,21 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.hibernate.validator.constraints.UUID;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,12 +51,11 @@ import java.util.Set;
 @Table(name = "users", schema = "security")
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @ToString()
-@Inheritance(strategy = InheritanceType.JOINED)
 @SQLRestriction("is_deleted = false")
 @NoArgsConstructor
-public abstract class User {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,9 +64,6 @@ public abstract class User {
     @UUID
     @Column(name = "user_uuid", unique = true, nullable = false, updatable = false)
     private java.util.UUID userUUID;
-
-    @Column(name = "date_of_birth", nullable = false)
-    private LocalDate dateOfBirth;
 
     @Column(name = "last_login_timestamp")
     private ZonedDateTime  lastLogin;

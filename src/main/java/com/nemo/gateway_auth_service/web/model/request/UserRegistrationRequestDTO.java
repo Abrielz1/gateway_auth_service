@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Builder
-public record ClientRegistrationRequestDTO(
+public record UserRegistrationRequestDTO(
         @NotBlank(message = "Имя пользователя не может быть пустым")
         @Size(min = 8, max = 256, message = "Имя пользователя должено быть от 8 до 256 символов")
         String username,
@@ -29,7 +29,7 @@ public record ClientRegistrationRequestDTO(
         @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$|^$", message = "Дата рождения должна быть в формате YYYY-MM-DD")
         String dateOfBirth) {
 
-    public ClientRegistrationRequestDTO {
+    public UserRegistrationRequestDTO {
 
         LocalDate date;
         try {
