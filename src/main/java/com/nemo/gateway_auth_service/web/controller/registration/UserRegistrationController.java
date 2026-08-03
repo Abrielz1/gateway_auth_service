@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Client oriented controller", description = "Clients management")
 @Validated
 @RestController
-@RequestMapping("/api/v1/registaration/cient")
+@RequestMapping("/api/v1/registaration/client")
 @RequiredArgsConstructor
 public class UserRegistrationController {
 
